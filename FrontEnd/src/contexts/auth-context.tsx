@@ -30,7 +30,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedUser = localStorage.getItem("currentUser")
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser))
+        const parsedUser = JSON.parse(storedUser)
+        // Ensure ID is string even from local storage
+        const formattedUser = { ...parsedUser, id: String(parsedUser.id) }
+        setUser(formattedUser)
       } catch (error) {
         console.error("Failed to parse stored user", error)
       }
@@ -39,44 +42,65 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
-    const foundUser = users.find((u: User) => u.email === email)
+    try {
+      const response = await fetch("http://localhost:8000/api/users/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (!foundUser) {
-      throw new Error("Usuario no encontrado")
+      const contentType = response.headers.get("content-type")
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const data = await response.json()
+        if (!response.ok) {
+          throw new Error(data.error || "Error al iniciar sesión")
+        }
+        // Ensure ID is string
+        const formattedUser = { ...data, id: String(data.id) }
+        setUser(formattedUser)
+        localStorage.setItem("currentUser", JSON.stringify(formattedUser))
+      } else {
+        const text = await response.text()
+        console.error("Non-JSON response:", text)
+        throw new Error("Error del servidor: Respuesta no válida")
+      }
+    } catch (error) {
+      console.error("Login error:", error)
+      throw error
     }
-
-    if (foundUser.password !== password) {
-      throw new Error("Contraseña inválida")
-    }
-
-    const { password: _, ...userWithoutPassword } = foundUser
-    setUser(userWithoutPassword)
-    localStorage.setItem("currentUser", JSON.stringify(userWithoutPassword))
   }
 
   const signup = async (email: string, name: string, password: string) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
+    try {
+      const response = await fetch("http://localhost:8000/api/users/signup/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, name, password }),
+      })
 
-    if (users.some((u: User) => u.email === email)) {
-      throw new Error("El usuario ya existe")
+      const contentType = response.headers.get("content-type")
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const data = await response.json()
+        if (!response.ok) {
+          throw new Error(data.detail || "Error al registrarse")
+        }
+        // Ensure ID is string
+        const formattedUser = { ...data, id: String(data.id) }
+        setUser(formattedUser)
+        localStorage.setItem("currentUser", JSON.stringify(formattedUser))
+      } else {
+        const text = await response.text()
+        console.error("Non-JSON response:", text)
+        throw new Error("Error del servidor: Respuesta no válida")
+      }
+    } catch (error) {
+      console.error("Signup error:", error)
+      throw error
     }
-
-    const newUser: User & { password: string } = {
-      id: `user_${Date.now()}`,
-      email,
-      name,
-      password,
-      role: "user",
-      createdAt: new Date().toISOString(),
-    }
-
-    users.push(newUser)
-    localStorage.setItem("users", JSON.stringify(users))
-
-    const { password: _, ...userWithoutPassword } = newUser
-    setUser(userWithoutPassword)
-    localStorage.setItem("currentUser", JSON.stringify(userWithoutPassword))
   }
 
   const logout = () => {

@@ -13,7 +13,8 @@ export default function ReservationsPage() {
   const { reservations, events, cancelReservation } = useData()
   const { addNotification } = useNotifications()
 
-  const userReservations = reservations.filter((r) => r.userId === user?.id && r.status === "confirmed")
+  // Ensure we compare strings
+  const userReservations = reservations.filter((r) => String(r.userId) === String(user?.id) && r.status === "confirmed")
 
   const handleCancel = (reservationId: string) => {
     if (window.confirm("¿Estás seguro de que quieres cancelar esta reserva?")) {
@@ -107,7 +108,7 @@ export default function ReservationsPage() {
                           <div className="reservation-detail-item">
                             <span className="reservation-detail-label">Precio Total</span>
                             <span className="reservation-detail-value" style={{ color: "var(--primary)" }}>
-                              ${reservation.totalPrice.toFixed(2)}
+                              ${Number(reservation.totalPrice).toFixed(2)}
                             </span>
                           </div>
                         </div>

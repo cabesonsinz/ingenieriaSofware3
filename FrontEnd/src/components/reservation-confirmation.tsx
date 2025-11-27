@@ -53,7 +53,7 @@ export function ReservationConfirmation({ confirmationData }: ReservationConfirm
         <div className="border-t border-border pt-4">
           <div className="flex justify-between items-center">
             <span className="font-semibold">Precio Total</span>
-            <span className="text-2xl font-bold text-primary">${reservation.totalPrice.toFixed(2)}</span>
+            <span className="text-2xl font-bold text-primary">${Number(reservation.totalPrice).toFixed(2)}</span>
           </div>
         </div>
 

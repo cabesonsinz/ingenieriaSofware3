@@ -153,3 +153,49 @@ Edit the `INITIAL_EVENTS` array in `src/contexts/data-context.tsx` to add more d
 ## License
 
 MIT
+
+## Backend Setup
+
+The project now includes a Django backend to serve the API.
+
+### Prerequisites
+
+- Python 3.8+
+- pip
+
+### Installation and Running
+
+1. Navigate to the `Backend` directory:
+   ```bash
+   cd ../Backend
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install django djangorestframework django-cors-headers
+   ```
+
+3. Run migrations:
+   ```bash
+   python manage.py migrate
+   ```
+
+4. Start the server:
+   ```bash
+   python manage.py runserver
+   ```
+
+The API will be available at `http://localhost:8000/api/`.
+
+### API Endpoints
+
+- **Users**: `/api/users/`
+- **Events**: `/api/events/`
+- **Reservations**: `/api/reservations/`
+
+### Admin Credentials
+
+To access the Django admin panel at `http://localhost:8000/admin/`, use the following credentials:
+
+- **Email/Username**: `admin@example.com` / `admin`
+- **Password**: `admin123`
