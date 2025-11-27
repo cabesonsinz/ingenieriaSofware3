@@ -1,104 +1,201 @@
-# EventHub - Sistema de Gestión de Eventos
+# EventHub - Sistema de Gestión de Eventos con React Router
 
-Este repositorio contiene el código fuente para EventHub, una aplicación completa para la gestión y reserva de eventos. El proyecto está dividido en dos partes principales: un Backend basado en Django y un Frontend desarrollado con React.
+Un sistema moderno y completo de gestión de eventos y reservas construido con React Router v6+, Tailwind CSS y localStorage para la persistencia de datos.
+
+## Características
+
+- **Descubrimiento de Eventos**: Explora y filtra eventos por categoría, busca por título o descripción
+- **Autenticación de Usuarios**: Registro, inicio de sesión y gestión de cuentas
+- **Reservas**: Reserva entradas para eventos con seguimiento de disponibilidad en tiempo real
+- **Panel de Usuario**: Ve tus reservas, información de cuenta y gestiona tus reservas
+- **Panel de Administrador**: 
+  - Resumen con métricas clave (ingresos, total de reservas, asistentes)
+  - Gestión de eventos con seguimiento de capacidad
+  - Monitoreo de reservas
+  - Historial de correos electrónicos y registro de comunicaciones
+- **Simulación de Correo Electrónico**: El sistema genera correos de confirmación, cancelación y recordatorios
+- **Notificaciones**: Notificaciones toast en la aplicación para todas las acciones
+- **Diseño Responsivo**: Funciona perfectamente en escritorio, tablet y dispositivos móviles
+
+## Stack Tecnológico
+
+- **Frontend**: React 19 con TypeScript
+- **Enrutamiento**: React Router v7
+- **Estilos**: Tailwind CSS v4 con tema personalizado
+- **Datos**: localStorage para persistencia
+- **Construcción**: Vite
+
+## Comenzando
+
+### Prerrequisitos
+
+- Node.js 18+ 
+- npm o yarn
+
+### Instalación
+
+1. Clona el repositorio
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+
+3. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+
+4. Construye para producción:
+   ```bash
+   npm run build
+   ```
 
 ## Estructura del Proyecto
 
-- **Backend/**: API RESTful construida con Django y Django Rest Framework. Maneja la lógica de negocio, base de datos, autenticación y gestión de datos.
-- **FrontEnd/**: Aplicación de usuario construida con React, TypeScript y Tailwind CSS. Proporciona la interfaz para explorar eventos, realizar reservas y gestionar cuentas.
+```
+src/
+├── pages/              # Componentes de página (rutas)
+│   ├── home.tsx
+│   ├── login.tsx
+│   ├── signup.tsx
+│   ├── event-detail.tsx
+│   ├── reservations.tsx
+│   ├── admin.tsx
+│   ├── admin-emails.tsx
+│   ├── confirmation.tsx
+│   └── not-found.tsx
+├── components/         # Componentes reutilizables
+│   ├── navigation.tsx
+│   ├── protected-route.tsx
+│   ├── booking-form.tsx
+│   ├── reservation-confirmation.tsx
+│   ├── email-history.tsx
+│   ├── notifications-center.tsx
+│   └── admin-setup.tsx
+├── contexts/          # Contextos de React para estado
+│   ├── auth-context.tsx
+│   ├── data-context.tsx
+│   └── notifications-context.tsx
+├── services/          # Servicios de lógica de negocio
+│   └── email-service.ts
+├── App.tsx            # Componente principal de la app con enrutamiento
+├── index.tsx          # Punto de entrada
+└── globals.css        # Estilos globales y tema
+```
 
-## Requisitos Previos
+## Rutas Clave
 
-Asegúrate de tener instalado lo siguiente en tu sistema:
+- `/` - Página de inicio con descubrimiento de eventos
+- `/login` - Inicio de sesión de usuario
+- `/signup` - Registro de usuario
+- `/events/:id` - Detalles del evento y reserva
+- `/reservations` - Reservas del usuario (protegido)
+- `/confirmation` - Confirmación de reserva (protegido)
+- `/admin` - Panel de administrador (solo admin)
+- `/admin/emails` - Historial de correos (solo admin)
 
-- **Node.js** (v18 o superior) y npm
-- **Python** (v3.8 o superior) y pip
-- **Git**
+## Cuenta de Demostración
 
-## Configuración e Instalación
+- Correo: `admin@example.com`
+- Contraseña: `admin123`
 
-Sigue estos pasos para configurar y ejecutar el proyecto localmente.
+La cuenta de demostración tiene privilegios de administrador. También puedes crear tu propia cuenta de usuario a través de la página de registro.
 
-### 1. Configuración del Backend (Django)
+## Características Explicadas
 
-El backend debe estar ejecutándose para que el frontend funcione correctamente.
+### Autenticación
+- Los nuevos usuarios pueden registrarse con correo, nombre y contraseña
+- Los usuarios existentes pueden iniciar sesión
+- El primer usuario obtiene automáticamente el rol de administrador
+- Las credenciales se almacenan en localStorage
 
-1.  Navega a la carpeta del Backend:
-    ```bash
-    cd Backend
-    ```
+### Gestión de Eventos
+- Los eventos se muestran con porcentaje de disponibilidad
+- Actualizaciones de conteo de entradas en tiempo real
+- Filtrado por precio y categoría
+- Funcionalidad de búsqueda
 
-2.  Instala las dependencias de Python:
-    ```bash
-    pip install django djangorestframework django-cors-headers
-    ```
+### Sistema de Reservas
+- Los usuarios pueden reservar de 1 a 10 entradas por evento
+- Generación automática de confirmación por correo electrónico
+- Gestión de capacidad con prevención de sobrecupo
+- Cancelación con seguimiento de reembolsos
 
-3.  Ejecuta las migraciones de la base de datos:
-    ```bash
-    python manage.py migrate
-    ```
+### Características de Administrador
+- Panel de resumen con métricas clave
+- Seguimiento de ocupación de eventos
+- Monitoreo de reservas
+- Visor de historial de correos con filtrado por tipo
 
-4.  Carga los datos iniciales (Eventos y Usuario Administrador):
-    ```bash
-    python manage.py seed_data
-    ```
+### Sistema de Correo Electrónico
+- Correos de confirmación automáticos al reservar
+- Correos de cancelación con montos de reembolso
+- Correos recordatorios para próximos eventos
+- Historial de correos almacenado y visible en el panel de administración
 
-5.  Inicia el servidor de desarrollo:
-    ```bash
-    python manage.py runserver
-    ```
+## Personalización
 
-    El backend estará disponible en `http://localhost:8000/`.
-    - API: `http://localhost:8000/api/`
-    - Panel de Administración: `http://localhost:8000/admin/`
+### Colores del Tema
+Edita `src/globals.css` para personalizar la paleta de colores:
+- Primario (Azul): Azul profesional para acciones principales
+- Secundario (Gris): Gris suave para fondos
+- Acento (Verde): Verde vibrante para destacados
 
-    **Credenciales de Administrador:**
-    - Usuario: `admin@example.com` (o `admin`)
-    - Contraseña: `admin123`
+### Añadir Más Eventos
+Edita el array `INITIAL_EVENTS` en `src/contexts/data-context.tsx` para añadir más eventos de demostración.
 
-### 2. Configuración del Frontend (React)
+## Soporte de Navegador
 
-1.  Abre una nueva terminal y navega a la carpeta del Frontend:
-    ```bash
-    cd FrontEnd
-    ```
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
 
-2.  Instala las dependencias de Node:
-    ```bash
-    npm install
-    ```
+## Licencia
 
-3.  Inicia el servidor de desarrollo del frontend:
-    ```bash
-    npm run dev
-    ```
+MIT
 
-    La aplicación se abrirá en tu navegador, generalmente en `http://localhost:5173/` (o el puerto que indique la terminal).
+## Configuración del Backend
 
-## Características Principales
+El proyecto ahora incluye un backend Django para servir la API.
 
-- **Exploración de Eventos**: Visualiza eventos disponibles, filtra por categorías y busca por nombre.
-- **Reservas en Tiempo Real**: Reserva entradas y ve la disponibilidad actualizada al instante.
-- **Gestión de Usuarios**: Registro e inicio de sesión seguro.
-- **Panel de "Mis Reservas"**: Los usuarios pueden ver y cancelar sus reservas.
-- **Panel de Administración**: Acceso exclusivo para administradores para gestionar eventos, ver métricas y controlar reservas.
+### Prerrequisitos
 
-## Tecnologías Utilizadas
+- Python 3.8+
+- pip
 
-### Backend
-- Django
-- Django Rest Framework
-- SQLite (Base de datos por defecto)
+### Instalación y Ejecución
 
-### Frontend
-- React 19
-- TypeScript
-- Tailwind CSS
-- React Router
-- Vite
+1. Navega al directorio `Backend`:
+   ```bash
+   cd ../Backend
+   ```
 
-## Solución de Problemas Comunes
+2. Instala las dependencias:
+   ```bash
+   pip install django djangorestframework django-cors-headers
+   ```
 
-- **Error de conexión**: Asegúrate de que el servidor Backend (`python manage.py runserver`) esté ejecutándose en el puerto 8000 mientras usas el Frontend.
-- **Datos no cargan**: Verifica la consola del navegador y la terminal del backend para ver si hay errores de red.
-- **Problemas al reservar**: Asegúrate de haber iniciado sesión. Si eres el administrador y no ves tus reservas, recuerda que las reservas canceladas no aparecen en la lista de "confirmadas".
+3. Ejecuta las migraciones:
+   ```bash
+   python manage.py migrate
+   ```
+
+4. Inicia el servidor:
+   ```bash
+   python manage.py runserver
+   ```
+
+La API estará disponible en `http://localhost:8000/api/`.
+
+### Endpoints de la API
+
+- **Usuarios**: `/api/users/`
+- **Eventos**: `/api/events/`
+- **Reservas**: `/api/reservations/`
+
+### Credenciales de Administrador
+
+Para acceder al panel de administración de Django en `http://localhost:8000/admin/`, usa las siguientes credenciales:
+
+- **Correo/Usuario**: `admin@example.com` / `admin`
+- **Contraseña**: `admin123`
