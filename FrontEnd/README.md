@@ -1,60 +1,60 @@
-# EventHub - Event Management System with React Router
+# EventHub - Sistema de Gestión de Eventos con React Router
 
-A modern, fully-featured event and reservation management system built with React Router v6+, Tailwind CSS, and localStorage for data persistence.
+Un sistema moderno y completo de gestión de eventos y reservas construido con React Router v6+, Tailwind CSS y localStorage para la persistencia de datos.
 
-## Features
+## Características
 
-- **Event Discovery**: Browse and filter events by category, search by title or description
-- **User Authentication**: Sign up, login, and account management
-- **Reservations**: Book tickets to events with real-time availability tracking
-- **User Dashboard**: View your reservations, account info, and manage bookings
-- **Admin Dashboard**: 
-  - Overview with key metrics (revenue, total reservations, attendees)
-  - Event management with capacity tracking
-  - Reservation monitoring
-  - Email history and communications log
-- **Email Simulation**: System generates confirmation, cancellation, and reminder emails
-- **Notifications**: In-app toast notifications for all actions
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
+- **Descubrimiento de Eventos**: Explora y filtra eventos por categoría, busca por título o descripción
+- **Autenticación de Usuarios**: Registro, inicio de sesión y gestión de cuentas
+- **Reservas**: Reserva entradas para eventos con seguimiento de disponibilidad en tiempo real
+- **Panel de Usuario**: Ve tus reservas, información de cuenta y gestiona tus reservas
+- **Panel de Administrador**: 
+  - Resumen con métricas clave (ingresos, total de reservas, asistentes)
+  - Gestión de eventos con seguimiento de capacidad
+  - Monitoreo de reservas
+  - Historial de correos electrónicos y registro de comunicaciones
+- **Simulación de Correo Electrónico**: El sistema genera correos de confirmación, cancelación y recordatorios
+- **Notificaciones**: Notificaciones toast en la aplicación para todas las acciones
+- **Diseño Responsivo**: Funciona perfectamente en escritorio, tablet y dispositivos móviles
 
-## Tech Stack
+## Stack Tecnológico
 
-- **Frontend**: React 19 with TypeScript
-- **Routing**: React Router v7
-- **Styling**: Tailwind CSS v4 with custom theme
-- **Data**: localStorage for persistence
-- **Build**: Vite
+- **Frontend**: React 19 con TypeScript
+- **Enrutamiento**: React Router v7
+- **Estilos**: Tailwind CSS v4 con tema personalizado
+- **Datos**: localStorage para persistencia
+- **Construcción**: Vite
 
-## Getting Started
+## Comenzando
 
-### Prerequisites
+### Prerrequisitos
 
 - Node.js 18+ 
-- npm or yarn
+- npm o yarn
 
-### Installation
+### Instalación
 
-1. Clone the repository
-2. Install dependencies:
-   \`\`\`bash
+1. Clona el repositorio
+2. Instala las dependencias:
+   ```bash
    npm install
-   \`\`\`
+   ```
 
-3. Start the development server:
-   \`\`\`bash
+3. Inicia el servidor de desarrollo:
+   ```bash
    npm run dev
-   \`\`\`
+   ```
 
-4. Build for production:
-   \`\`\`bash
+4. Construye para producción:
+   ```bash
    npm run build
-   \`\`\`
+   ```
 
-## Project Structure
+## Estructura del Proyecto
 
-\`\`\`
+```
 src/
-├── pages/              # Page components (routes)
+├── pages/              # Componentes de página (rutas)
 │   ├── home.tsx
 │   ├── login.tsx
 │   ├── signup.tsx
@@ -64,7 +64,7 @@ src/
 │   ├── admin-emails.tsx
 │   ├── confirmation.tsx
 │   └── not-found.tsx
-├── components/         # Reusable components
+├── components/         # Componentes reutilizables
 │   ├── navigation.tsx
 │   ├── protected-route.tsx
 │   ├── booking-form.tsx
@@ -72,130 +72,130 @@ src/
 │   ├── email-history.tsx
 │   ├── notifications-center.tsx
 │   └── admin-setup.tsx
-├── contexts/          # React contexts for state
+├── contexts/          # Contextos de React para estado
 │   ├── auth-context.tsx
 │   ├── data-context.tsx
 │   └── notifications-context.tsx
-├── services/          # Business logic services
+├── services/          # Servicios de lógica de negocio
 │   └── email-service.ts
-├── App.tsx            # Main app component with routing
-├── index.tsx          # Entry point
-└── globals.css        # Global styles and theme
-\`\`\`
+├── App.tsx            # Componente principal de la app con enrutamiento
+├── index.tsx          # Punto de entrada
+└── globals.css        # Estilos globales y tema
+```
 
-## Key Routes
+## Rutas Clave
 
-- `/` - Home page with event discovery
-- `/login` - User login
-- `/signup` - User registration
-- `/events/:id` - Event details and booking
-- `/reservations` - User's reservations (protected)
-- `/confirmation` - Reservation confirmation (protected)
-- `/admin` - Admin dashboard (admin only)
-- `/admin/emails` - Email history (admin only)
+- `/` - Página de inicio con descubrimiento de eventos
+- `/login` - Inicio de sesión de usuario
+- `/signup` - Registro de usuario
+- `/events/:id` - Detalles del evento y reserva
+- `/reservations` - Reservas del usuario (protegido)
+- `/confirmation` - Confirmación de reserva (protegido)
+- `/admin` - Panel de administrador (solo admin)
+- `/admin/emails` - Historial de correos (solo admin)
 
-## Demo Account
+## Cuenta de Demostración
 
-- Email: `admin@example.com`
-- Password: `admin123`
+- Correo: `admin@example.com`
+- Contraseña: `admin123`
 
-The demo account has admin privileges. You can also create your own user account via the signup page.
+La cuenta de demostración tiene privilegios de administrador. También puedes crear tu propia cuenta de usuario a través de la página de registro.
 
-## Features Explained
+## Características Explicadas
 
-### Authentication
-- New users can sign up with email, name, and password
-- Existing users can log in
-- First user automatically gets admin role
-- Credentials stored in localStorage
+### Autenticación
+- Los nuevos usuarios pueden registrarse con correo, nombre y contraseña
+- Los usuarios existentes pueden iniciar sesión
+- El primer usuario obtiene automáticamente el rol de administrador
+- Las credenciales se almacenan en localStorage
 
-### Event Management
-- Events display with availability percentage
-- Real-time ticket count updates
-- Price and category filtering
-- Search functionality
+### Gestión de Eventos
+- Los eventos se muestran con porcentaje de disponibilidad
+- Actualizaciones de conteo de entradas en tiempo real
+- Filtrado por precio y categoría
+- Funcionalidad de búsqueda
 
-### Reservation System
-- Users can book 1-10 tickets per event
-- Automatic email confirmation generation
-- Capacity management with overfill prevention
-- Cancellation with refund tracking
+### Sistema de Reservas
+- Los usuarios pueden reservar de 1 a 10 entradas por evento
+- Generación automática de confirmación por correo electrónico
+- Gestión de capacidad con prevención de sobrecupo
+- Cancelación con seguimiento de reembolsos
 
-### Admin Features
-- Overview dashboard with key metrics
-- Event occupancy tracking
-- Reservation monitoring
-- Email history viewer with filtering by type
+### Características de Administrador
+- Panel de resumen con métricas clave
+- Seguimiento de ocupación de eventos
+- Monitoreo de reservas
+- Visor de historial de correos con filtrado por tipo
 
-### Email System
-- Automatic confirmation emails on booking
-- Cancellation emails with refund amounts
-- Reminder emails for upcoming events
-- Email history stored and viewable in admin panel
+### Sistema de Correo Electrónico
+- Correos de confirmación automáticos al reservar
+- Correos de cancelación con montos de reembolso
+- Correos recordatorios para próximos eventos
+- Historial de correos almacenado y visible en el panel de administración
 
-## Customization
+## Personalización
 
-### Theme Colors
-Edit `src/globals.css` to customize the color palette:
-- Primary (Blue): Professional blue for main actions
-- Secondary (Gray): Soft gray for backgrounds
-- Accent (Green): Vibrant green for highlights
+### Colores del Tema
+Edita `src/globals.css` para personalizar la paleta de colores:
+- Primario (Azul): Azul profesional para acciones principales
+- Secundario (Gris): Gris suave para fondos
+- Acento (Verde): Verde vibrante para destacados
 
-### Adding More Events
-Edit the `INITIAL_EVENTS` array in `src/contexts/data-context.tsx` to add more demo events.
+### Añadir Más Eventos
+Edita el array `INITIAL_EVENTS` en `src/contexts/data-context.tsx` para añadir más eventos de demostración.
 
-## Browser Support
+## Soporte de Navegador
 
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
 
-## License
+## Licencia
 
 MIT
 
-## Backend Setup
+## Configuración del Backend
 
-The project now includes a Django backend to serve the API.
+El proyecto ahora incluye un backend Django para servir la API.
 
-### Prerequisites
+### Prerrequisitos
 
 - Python 3.8+
 - pip
 
-### Installation and Running
+### Instalación y Ejecución
 
-1. Navigate to the `Backend` directory:
+1. Navega al directorio `Backend`:
    ```bash
    cd ../Backend
    ```
 
-2. Install dependencies:
+2. Instala las dependencias:
    ```bash
    pip install django djangorestframework django-cors-headers
    ```
 
-3. Run migrations:
+3. Ejecuta las migraciones:
    ```bash
    python manage.py migrate
    ```
 
-4. Start the server:
+4. Inicia el servidor:
    ```bash
    python manage.py runserver
    ```
 
-The API will be available at `http://localhost:8000/api/`.
+La API estará disponible en `http://localhost:8000/api/`.
 
-### API Endpoints
+### Endpoints de la API
 
-- **Users**: `/api/users/`
-- **Events**: `/api/events/`
-- **Reservations**: `/api/reservations/`
+- **Usuarios**: `/api/users/`
+- **Eventos**: `/api/events/`
+- **Reservas**: `/api/reservations/`
 
-### Admin Credentials
+### Credenciales de Administrador
 
-To access the Django admin panel at `http://localhost:8000/admin/`, use the following credentials:
+Para acceder al panel de administración de Django en `http://localhost:8000/admin/`, usa las siguientes credenciales:
 
-- **Email/Username**: `admin@example.com` / `admin`
-- **Password**: `admin123`
+- **Correo/Usuario**: `admin@example.com` / `admin`
+- **Contraseña**: `admin123`
