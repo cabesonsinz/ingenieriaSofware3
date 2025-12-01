@@ -72,6 +72,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             id: String(res.id),
             eventId: String(res.event), // Ensure eventId matches the string ID of events
             userId: String(res.user),   // Ensure userId matches string ID if needed
+            totalPrice: parseFloat(res.totalPrice), // Ensure totalPrice is a number
           }))
           setReservations(formattedReservations)
         }

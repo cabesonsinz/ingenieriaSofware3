@@ -29,7 +29,7 @@ export default function AdminPage() {
   const [formMessage, setFormMessage] = useState("")
 
   const confirmedReservations = reservations.filter((r) => r.status === "confirmed")
-  const totalRevenue = confirmedReservations.reduce((sum, r) => sum + r.totalPrice, 0)
+  const totalRevenue = confirmedReservations.reduce((sum, r) => sum + Number(r.totalPrice), 0)
   const totalAttendees = confirmedReservations.reduce((sum, r) => sum + r.ticketCount, 0)
 
   const handleCreateEvent = (e: React.FormEvent) => {
