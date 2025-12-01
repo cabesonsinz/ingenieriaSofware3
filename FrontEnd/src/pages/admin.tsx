@@ -218,7 +218,7 @@ export default function AdminPage() {
 
           {activeTab === "create-event" && (
             <div className="create-event-container">
-              <div className="card" style={{ padding: "2rem", maxWidth: "56rem", margin: "0 auto" }}>
+              <div className="card" style={{ padding: "2rem", width: "100%", margin: "0 auto" }}>
                 <h2 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1.5rem" }}>
                   {editingEventId ? "Editar Evento" : "Crear Nuevo Evento"}
                 </h2>
@@ -241,36 +241,36 @@ export default function AdminPage() {
                 )}
 
                 <form onSubmit={handleCreateEvent} className="create-event-form">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Título del Evento *</label>
-                      <input
-                        type="text"
-                        value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        placeholder="ej., Conferencia de Tecnología 2025"
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Categoría *</label>
-                      <select
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        required
-                      >
-                        <option value="">Selecciona una categoría</option>
-                        <option value="Tecnología">Tecnología</option>
-                        <option value="Diseño">Diseño</option>
-                        <option value="Networking">Networking</option>
-                        <option value="Educación">Educación</option>
-                        <option value="Negocios">Negocios</option>
-                        <option value="Entretenimiento">Entretenimiento</option>
-                      </select>
-                    </div>
+                  <div className="form-group" style={{ gridColumn: "span 2" }}>
+                    <label>Título del Evento *</label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      placeholder="ej., Conferencia de Tecnología 2025"
+                      required
+                    />
                   </div>
 
                   <div className="form-group">
+                    <label>Categoría *</label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      required
+                    >
+                      <option value="">Selecciona una categoría</option>
+                      <option value="Tecnología">Tecnología</option>
+                      <option value="Diseño">Diseño</option>
+                      <option value="Networking">Networking</option>
+                      <option value="Educación">Educación</option>
+                      <option value="Negocios">Negocios</option>
+                      <option value="Entretenimiento">Entretenimiento</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group" style={{ gridColumn: "1 / -1" }}>
                     <label>Descripción</label>
                     <textarea
                       value={formData.description}
@@ -280,25 +280,24 @@ export default function AdminPage() {
                     />
                   </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Fecha *</label>
-                      <input
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Hora *</label>
-                      <input
-                        type="time"
-                        value={formData.time}
-                        onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                        required
-                      />
-                    </div>
+                  <div className="form-group">
+                    <label>Fecha *</label>
+                    <input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Hora *</label>
+                    <input
+                      type="time"
+                      value={formData.time}
+                      onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                      required
+                    />
                   </div>
 
                   <div className="form-group">
@@ -307,60 +306,60 @@ export default function AdminPage() {
                       type="text"
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      placeholder="ej., Centro de Convenciones, San Francisco, CA"
+                      placeholder="ej., Centro de Convenciones"
                     />
                   </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Precio (USD) *</label>
-                      <input
-                        type="number"
-                        value={formData.price}
-                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                        placeholder="99"
-                        step="0.01"
-                        min="0"
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Capacidad (asientos) *</label>
-                      <input
-                        type="number"
-                        value={formData.capacity}
-                        onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                        placeholder="100"
-                        min="1"
-                        required
-                      />
-                    </div>
+                  <div className="form-group">
+                    <label>Precio (USD) *</label>
+                    <input
+                      type="number"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      placeholder="99"
+                      step="0.01"
+                      min="0"
+                      required
+                    />
                   </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>URL de Imagen</label>
-                      <input
-                        type="text"
-                        value={formData.image}
-                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                        placeholder="https://example.com/image.jpg"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Organizador</label>
-                      <input
-                        type="text"
-                        value={formData.organizer}
-                        onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
-                        placeholder="Nombre de tu organización"
-                      />
-                    </div>
+                  <div className="form-group">
+                    <label>Capacidad *</label>
+                    <input
+                      type="number"
+                      value={formData.capacity}
+                      onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                      placeholder="100"
+                      min="1"
+                      required
+                    />
                   </div>
 
-                  <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
-                    {editingEventId ? "Guardar Cambios" : "Crear Evento"}
-                  </button>
+                  <div className="form-group">
+                    <label>Organizador</label>
+                    <input
+                      type="text"
+                      value={formData.organizer}
+                      onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
+                      placeholder="Nombre de tu organización"
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ gridColumn: "1 / -1" }}>
+                    <label>URL de Imagen</label>
+                    <input
+                      type="text"
+                      value={formData.image}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
+
+                  <div style={{ gridColumn: "1 / -1", marginTop: "1rem" }}>
+                    <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
+                      {editingEventId ? "Guardar Cambios" : "Crear Evento"}
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>

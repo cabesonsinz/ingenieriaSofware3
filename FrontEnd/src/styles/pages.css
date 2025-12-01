@@ -429,11 +429,33 @@
   padding: 3rem 1rem;
 }
 
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 1.5rem 1rem;
+  }
+}
+
 .admin-tabs {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS */
+  padding-bottom: 1px;
+  /* Prevent border clipping */
+}
+
+/* Hide scrollbar for cleaner look but keep functionality */
+.admin-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.admin-tabs::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 4px;
 }
 
 .admin-tab {
@@ -525,6 +547,7 @@
   display: flex;
   justify-content: center;
   padding: 2rem 0;
+  width: 100%;
 }
 
 .create-event-form {
@@ -535,8 +558,30 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .create-event-form {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .form-row {
+    display: contents;
+    /* Let children participate in the main grid */
+  }
+
+  /* Specific spans for larger screens */
+  .form-group:has(textarea) {
+    grid-column: span 3;
+  }
+
+  .form-group:has(input[name="title"]) {
+    grid-column: span 2;
+  }
 }
 
 @media (max-width: 768px) {

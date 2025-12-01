@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../contexts/auth-context"
+import { useData } from "../contexts/data-context"
 import { useNotifications } from "../contexts/notifications-context"
 import { Navigation } from "../components/navigation"
 import "../styles/pages.css"
@@ -18,6 +19,7 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const { signup } = useAuth()
+  const { fetchUsers } = useData()
   const { addNotification } = useNotifications()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,6 +40,7 @@ export default function SignupPage() {
 
     try {
       await signup(email, name, password)
+      await fetchUsers()
       addNotification("¡Cuenta creada exitosamente!", "success")
       navigate("/")
     } catch (err) {

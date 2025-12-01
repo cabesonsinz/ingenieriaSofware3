@@ -39,7 +39,7 @@ export default function EventDetailPage() {
   const availableTickets = event.capacity - event.registeredCount
   const isAvailable = availableTickets > 0
 
-  const handleBooking = (ticketCount: number) => {
+  const handleBooking = async (ticketCount: number) => {
     if (!user) {
       navigate("/login")
       return
@@ -48,7 +48,7 @@ export default function EventDetailPage() {
     setIsBooking(true)
 
     try {
-      const reservation = addReservation(user.id, event.id, ticketCount)
+      const reservation = await addReservation(user.id, event.id, ticketCount)
       sessionStorage.setItem("reservationData", JSON.stringify({ event, reservation, ticketCount }))
       addNotification("¡Reserva confirmada!", "success")
       navigate("/confirmation")

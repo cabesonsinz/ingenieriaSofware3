@@ -1,17 +1,24 @@
 "use client"
 
 /* Updated to use pure CSS instead of Tailwind */
+import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/auth-context"
 import "../styles/navigation.css"
 
 export function Navigation() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = () => {
     logout()
     navigate("/")
+    setIsMenuOpen(false)
+  }
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen)
   }
 
   return (
@@ -23,14 +30,18 @@ export function Navigation() {
             <span>EventHub</span>
           </Link>
 
-          <div className="nav-links">
+          <button className="nav-toggle" onClick={toggleMenu} aria-label="Toggle navigation">
+            <span className={`hamburger ${isMenuOpen ? "open" : ""}`}></span>
+          </button>
+
+          <div className={`nav-links ${isMenuOpen ? "active" : ""}`}>
             {user ? (
               <>
-                <Link to="/reservations" className="nav-link">
+                <Link to="/reservations" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                   Mis Reservas
                 </Link>
                 {user.role === "admin" && (
-                  <Link to="/admin" className="nav-link">
+                  <Link to="/admin" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                     Panel de Administración
                   </Link>
                 )}
@@ -46,10 +57,10 @@ export function Navigation() {
               </>
             ) : (
               <>
-                <Link to="/login" className="btn btn-outline btn-sm">
+                <Link to="/login" className="btn btn-outline btn-sm" onClick={() => setIsMenuOpen(false)}>
                   Iniciar Sesión
                 </Link>
-                <Link to="/signup" className="btn btn-primary btn-sm">
+                <Link to="/signup" className="btn btn-primary btn-sm" onClick={() => setIsMenuOpen(false)}>
                   Registrarse
                 </Link>
               </>

@@ -53,34 +53,38 @@ Un sistema moderno y completo de gestión de eventos y reservas construido con R
 ## Estructura del Proyecto
 
 ```
-src/
-├── pages/              # Componentes de página (rutas)
-│   ├── home.tsx
-│   ├── login.tsx
-│   ├── signup.tsx
-│   ├── event-detail.tsx
-│   ├── reservations.tsx
-│   ├── admin.tsx
-│   ├── admin-emails.tsx
-│   ├── confirmation.tsx
-│   └── not-found.tsx
-├── components/         # Componentes reutilizables
-│   ├── navigation.tsx
-│   ├── protected-route.tsx
-│   ├── booking-form.tsx
-│   ├── reservation-confirmation.tsx
-│   ├── email-history.tsx
-│   ├── notifications-center.tsx
-│   └── admin-setup.tsx
-├── contexts/          # Contextos de React para estado
-│   ├── auth-context.tsx
-│   ├── data-context.tsx
-│   └── notifications-context.tsx
-├── services/          # Servicios de lógica de negocio
-│   └── email-service.ts
-├── App.tsx            # Componente principal de la app con enrutamiento
-├── index.tsx          # Punto de entrada
-└── globals.css        # Estilos globales y tema
+.
+├── Backend/
+│   ├── api/
+│   │   ├── migrations/
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── backend_project/
+│   ├── check_events.py
+│   ├── check_reservations.py
+│   ├── db.sqlite3
+│   ├── manage.py
+│   └── reset_events.py
+├── FrontEnd/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── styles/
+│   │   ├── App.tsx
+│   │   ├── globals.css
+│   │   └── index.tsx
+│   ├── index.html
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+└── README.md
 ```
 
 ## Rutas Clave

@@ -43,6 +43,7 @@ interface DataContextType {
   users: User[]
   deleteUser: (id: string) => Promise<void>
   updateUser: (id: string, user: Partial<User>) => Promise<User>
+  fetchUsers: () => Promise<void>
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined)
@@ -53,14 +54,29 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [users, setUsers] = useState<User[]>([])
 
+  const fetchUsers = async () => {
+    try {
+      const usersRes = await fetch("http://localhost:8000/api/users/")
+      if (usersRes.ok) {
+        const usersData = await usersRes.json()
+        const formattedUsers = usersData.map((user: any) => ({
+          ...user,
+          id: String(user.id),
+        }))
+        setUsers(formattedUsers)
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error)
+    }
+  }
+
   // Initialize data from API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [eventsRes, reservationsRes, usersRes] = await Promise.all([
+        const [eventsRes, reservationsRes] = await Promise.all([
           fetch("http://localhost:8000/api/events/"),
           fetch("http://localhost:8000/api/reservations/"),
-          fetch("http://localhost:8000/api/users/"),
         ])
 
         if (eventsRes.ok) {
@@ -85,14 +101,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
           setReservations(formattedReservations)
         }
 
-        if (usersRes.ok) {
-          const usersData = await usersRes.json()
-          const formattedUsers = usersData.map((user: any) => ({
-            ...user,
-            id: String(user.id),
-          }))
-          setUsers(formattedUsers)
-        }
+        await fetchUsers()
       } catch (error) {
         console.error("Error fetching data:", error)
       }
@@ -298,7 +307,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <DataContext.Provider
-      value={{ events, reservations, users, addReservation, cancelReservation, updateEventRegisteredCount, addEvent, updateEvent, deleteEvent, deleteUser, updateUser }}
+      value={{ events, reservations, users, addReservation, cancelReservation, updateEventRegisteredCount, addEvent, updateEvent, deleteEvent, deleteUser, updateUser, fetchUsers }}
     >
       {children}
     </DataContext.Provider>
