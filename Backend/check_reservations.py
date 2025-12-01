@@ -1,3 +1,9 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend_project.settings')
+django.setup()
+
 from api.models import Reservation, User, Event
 
 print("Checking Reservations...")

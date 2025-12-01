@@ -3,17 +3,25 @@
 import type React from "react"
 
 /* Updated to use pure CSS classes */
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useData } from "../contexts/data-context"
 import { Navigation } from "../components/navigation"
 import "../styles/pages.css"
 
-type Tab = "overview" | "events" | "reservations" | "create-event"
+type Tab = "overview" | "events" | "reservations" | "create-event" | "users" | "user-reservations"
 
 export default function AdminPage() {
-  const { events, reservations, addEvent } = useData()
+  const { events, reservations, addEvent, updateEvent, deleteEvent, users, deleteUser, updateUser, cancelReservation } = useData()
   const [activeTab, setActiveTab] = useState<Tab>("overview")
+  const [editingEventId, setEditingEventId] = useState<string | null>(null)
+  const [editingUserId, setEditingUserId] = useState<string | null>(null)
+  const [selectedUserId, setSelectedUserId] = useState<string>("")
+  const [userFormData, setUserFormData] = useState({
+    name: "",
+    email: "",
+    role: "visitor",
+  })
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -27,12 +35,18 @@ export default function AdminPage() {
     organizer: "",
   })
   const [formMessage, setFormMessage] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
+
+  // Clear search term when changing tabs
+  useEffect(() => {
+    setSearchTerm("")
+  }, [activeTab])
 
   const confirmedReservations = reservations.filter((r) => r.status === "confirmed")
   const totalRevenue = confirmedReservations.reduce((sum, r) => sum + Number(r.totalPrice), 0)
   const totalAttendees = confirmedReservations.reduce((sum, r) => sum + r.ticketCount, 0)
 
-  const handleCreateEvent = (e: React.FormEvent) => {
+  const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.title || !formData.date || !formData.price || !formData.capacity) {
@@ -41,7 +55,7 @@ export default function AdminPage() {
     }
 
     try {
-      addEvent({
+      const eventData = {
         title: formData.title,
         description: formData.description,
         date: formData.date,
@@ -52,9 +66,16 @@ export default function AdminPage() {
         capacity: Number.parseInt(formData.capacity),
         image: formData.image || "/community-event.png",
         organizer: formData.organizer,
-      })
+      }
 
-      setFormMessage("¡Evento creado exitosamente!")
+      if (editingEventId) {
+        await updateEvent(editingEventId, eventData)
+        setFormMessage("¡Evento actualizado exitosamente!")
+      } else {
+        await addEvent(eventData)
+        setFormMessage("¡Evento creado exitosamente!")
+      }
+
       setFormData({
         title: "",
         description: "",
@@ -67,13 +88,64 @@ export default function AdminPage() {
         image: "",
         organizer: "",
       })
+      setEditingEventId(null)
 
       setTimeout(() => {
         setFormMessage("")
         setActiveTab("events")
       }, 2000)
     } catch (error) {
-      setFormMessage("Error al crear el evento. Por favor intenta de nuevo.")
+      setFormMessage("Error al guardar el evento. Por favor intenta de nuevo.")
+    }
+  }
+
+  const handleEditEvent = (event: any) => {
+    setFormData({
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      time: event.time,
+      location: event.location,
+      category: event.category,
+      price: String(event.price),
+      capacity: String(event.capacity),
+      image: event.image,
+      organizer: event.organizer,
+    })
+    setEditingEventId(event.id)
+    setActiveTab("create-event")
+  }
+
+  const handleDeleteEvent = async (id: string) => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este evento?")) {
+      try {
+        await deleteEvent(id)
+      } catch (error) {
+        alert("Error al eliminar el evento")
+      }
+    }
+  }
+
+  const handleEditUser = (user: any) => {
+    setUserFormData({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    })
+    setEditingUserId(user.id)
+  }
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingUserId) return
+
+    try {
+      await updateUser(editingUserId, userFormData as any)
+      setEditingUserId(null)
+      setFormMessage("Usuario actualizado exitosamente")
+      setTimeout(() => setFormMessage(""), 2000)
+    } catch (error) {
+      alert("Error al actualizar usuario")
     }
   }
 
@@ -88,13 +160,25 @@ export default function AdminPage() {
           </div>
 
           <div className="admin-tabs">
-            {(["overview", "events", "create-event", "reservations"] as const).map((tab) => (
+            {(["overview", "events", "create-event", "reservations", "users", "user-reservations"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`admin-tab ${activeTab === tab ? "active" : ""}`}
               >
-                {tab === "overview" ? "Resumen" : tab === "create-event" ? "Crear Evento" : tab === "events" ? "Eventos" : "Reservas"}
+                {tab === "overview"
+                  ? "Resumen"
+                  : tab === "create-event"
+                    ? editingEventId
+                      ? "Editar Evento"
+                      : "Crear Evento"
+                    : tab === "events"
+                      ? "Eventos"
+                      : tab === "reservations"
+                        ? "Reservas"
+                        : tab === "users"
+                          ? "Usuarios"
+                          : "Reservas por Usuario"}
               </button>
             ))}
           </div>
@@ -135,7 +219,9 @@ export default function AdminPage() {
           {activeTab === "create-event" && (
             <div className="create-event-container">
               <div className="card" style={{ padding: "2rem", maxWidth: "56rem", margin: "0 auto" }}>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1.5rem" }}>Crear Nuevo Evento</h2>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1.5rem" }}>
+                  {editingEventId ? "Editar Evento" : "Crear Nuevo Evento"}
+                </h2>
 
                 {formMessage && (
                   <div
@@ -273,7 +359,7 @@ export default function AdminPage() {
                   </div>
 
                   <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
-                    Crear Evento
+                    {editingEventId ? "Guardar Cambios" : "Crear Evento"}
                   </button>
                 </form>
               </div>
@@ -282,56 +368,87 @@ export default function AdminPage() {
 
           {activeTab === "events" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {events.map((event) => {
-                const occupancy = (event.registeredCount / event.capacity) * 100
-                return (
-                  <div key={event.id} className="card" style={{ padding: "1.5rem" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                      <div style={{ flex: 1 }}>
-                        <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "0.5rem" }}>
-                          {event.title}
-                        </h3>
-                        <div
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
-                            gap: "1rem",
-                            fontSize: "0.875rem",
-                          }}
-                        >
-                          <div>
-                            <p style={{ color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Fecha</p>
-                            <p style={{ fontWeight: "500" }}>{event.date}</p>
+              <div className="card" style={{ padding: "1rem" }}>
+                <input
+                  type="text"
+                  placeholder="Buscar eventos por título o categoría..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ width: "100%", padding: "0.5rem", borderRadius: "var(--radius)", border: "1px solid var(--border)" }}
+                />
+              </div>
+              {events
+                .filter(
+                  (event) =>
+                    event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    event.category.toLowerCase().includes(searchTerm.toLowerCase()),
+                )
+                .map((event) => {
+                  const occupancy = (event.registeredCount / event.capacity) * 100
+                  return (
+                    <div key={event.id} className="card" style={{ padding: "1.5rem" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        <div style={{ flex: 1 }}>
+                          <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "0.5rem" }}>
+                            {event.title}
+                          </h3>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+                              gap: "1rem",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            <div>
+                              <p style={{ color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Fecha</p>
+                              <p style={{ fontWeight: "500" }}>{event.date}</p>
+                            </div>
+                            <div>
+                              <p style={{ color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Categoría</p>
+                              <p style={{ fontWeight: "500" }}>{event.category}</p>
+                            </div>
+                            <div>
+                              <p style={{ color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Precio</p>
+                              <p style={{ fontWeight: "500" }}>${event.price}</p>
+                            </div>
+                            <div>
+                              <p style={{ color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Ocupación</p>
+                              <p style={{ fontWeight: "500" }}>{occupancy.toFixed(0)}%</p>
+                            </div>
                           </div>
-                          <div>
-                            <p style={{ color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Categoría</p>
-                            <p style={{ fontWeight: "500" }}>{event.category}</p>
-                          </div>
-                          <div>
-                            <p style={{ color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Precio</p>
-                            <p style={{ fontWeight: "500" }}>${event.price}</p>
-                          </div>
-                          <div>
-                            <p style={{ color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Ocupación</p>
-                            <p style={{ fontWeight: "500" }}>{occupancy.toFixed(0)}%</p>
+                          <div style={{ marginTop: "0.75rem" }}>
+                            <div className="progress-bar">
+                              <div className="progress-bar-fill" style={{ width: `${occupancy}%` }} />
+                            </div>
+                            <p className="event-card-availability" style={{ marginTop: "0.25rem" }}>
+                              {event.registeredCount} de {event.capacity} asientos
+                            </p>
                           </div>
                         </div>
-                        <div style={{ marginTop: "0.75rem" }}>
-                          <div className="progress-bar">
-                            <div className="progress-bar-fill" style={{ width: `${occupancy}%` }} />
-                          </div>
-                          <p className="event-card-availability" style={{ marginTop: "0.25rem" }}>
-                            {event.registeredCount} de {event.capacity} asientos
-                          </p>
+                        <div style={{ display: "flex", gap: "0.5rem" }}>
+                          <Link to={`/events/${event.id}`} className="btn btn-outline" style={{ flex: 1 }}>
+                            Ver
+                          </Link>
+                          <button
+                            onClick={() => handleEditEvent(event)}
+                            className="btn btn-outline"
+                            style={{ flex: 1, borderColor: "var(--primary)", color: "var(--primary)" }}
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEvent(event.id)}
+                            className="btn btn-outline"
+                            style={{ flex: 1, borderColor: "var(--destructive)", color: "var(--destructive)" }}
+                          >
+                            Eliminar
+                          </button>
                         </div>
                       </div>
-                      <Link to={`/events/${event.id}`} className="btn btn-outline">
-                        Ver Evento
-                      </Link>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
             </div>
           )}
 
@@ -364,7 +481,7 @@ export default function AdminPage() {
                             <td>{event?.title || "Evento Desconocido"}</td>
                             <td>{reservation.ticketCount}</td>
                             <td style={{ fontWeight: "600", color: "var(--primary)" }}>
-                              ${reservation.totalPrice.toFixed(2)}
+                              ${Number(reservation.totalPrice).toFixed(2)}
                             </td>
                             <td style={{ fontSize: "0.875rem", color: "var(--muted-foreground)" }}>{event?.date}</td>
                             <td>
@@ -375,6 +492,208 @@ export default function AdminPage() {
                       })}
                     </tbody>
                   </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === "users" && (
+            <div>
+              <div className="card" style={{ padding: "1rem", marginBottom: "1.5rem" }}>
+                <input
+                  type="text"
+                  placeholder="Buscar usuarios por nombre o email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ width: "100%", padding: "0.5rem", borderRadius: "var(--radius)", border: "1px solid var(--border)" }}
+                />
+              </div>
+
+              {editingUserId && (
+                <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
+                  <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "1rem" }}>Editar Usuario</h3>
+                  <form onSubmit={handleUpdateUser} style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+                    <div className="form-group" style={{ flex: 1, minWidth: "200px" }}>
+                      <label>Nombre</label>
+                      <input
+                        type="text"
+                        value={userFormData.name}
+                        onChange={(e) => setUserFormData({ ...userFormData, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="form-group" style={{ flex: 1, minWidth: "200px" }}>
+                      <label>Email</label>
+                      <input
+                        type="email"
+                        value={userFormData.email}
+                        onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="form-group" style={{ flex: 1, minWidth: "150px" }}>
+                      <label>Rol</label>
+                      <select
+                        value={userFormData.role}
+                        onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value })}
+                      >
+                        <option value="visitor">Visitante</option>
+                        <option value="user">Usuario</option>
+                        <option value="admin">Administrador</option>
+                      </select>
+                    </div>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button type="submit" className="btn btn-primary">Guardar</button>
+                      <button type="button" onClick={() => setEditingUserId(null)} className="btn btn-outline">Cancelar</button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              <div style={{ overflowX: "auto" }}>
+                <table className="admin-events-table">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Rol</th>
+                      <th>Fecha Registro</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users
+                      .filter(
+                        (user) =>
+                          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+                      )
+                      .map((user) => (
+                        <tr key={user.id}>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td style={{ textTransform: "capitalize" }}>{user.role}</td>
+                          <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                          <td>
+                            <div style={{ display: "flex", gap: "0.5rem" }}>
+                              <button
+                                onClick={() => handleEditUser(user)}
+                                className="btn btn-outline"
+                                style={{ borderColor: "var(--primary)", color: "var(--primary)", padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
+                              >
+                                Editar
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  if (window.confirm(`¿Estás seguro de eliminar al usuario ${user.name}?`)) {
+                                    try {
+                                      await deleteUser(user.id)
+                                    } catch (error) {
+                                      alert("Error al eliminar usuario")
+                                    }
+                                  }
+                                }}
+                                className="btn btn-outline"
+                                style={{ borderColor: "var(--destructive)", color: "var(--destructive)", padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
+                              >
+                                Eliminar
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "user-reservations" && (
+            <div>
+              <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>Seleccionar Usuario</label>
+                <div style={{ marginBottom: "1rem" }}>
+                  <input
+                    type="text"
+                    placeholder="Filtrar lista de usuarios..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "var(--radius)", border: "1px solid var(--border)", marginBottom: "0.5rem" }}
+                  />
+                </div>
+                <select
+                  value={selectedUserId}
+                  onChange={(e) => setSelectedUserId(e.target.value)}
+                  style={{ width: "100%", padding: "0.5rem", borderRadius: "var(--radius)", border: "1px solid var(--border)" }}
+                >
+                  <option value="">-- Selecciona un usuario --</option>
+                  {users
+                    .filter(
+                      (user) =>
+                        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+                    )
+                    .map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name} ({user.email})
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              {selectedUserId && (
+                <div>
+                  {reservations.filter((r) => String(r.userId) === String(selectedUserId) && r.status === "confirmed").length === 0 ? (
+                    <div className="card" style={{ padding: "2rem", textAlign: "center", color: "var(--muted-foreground)" }}>
+                      Este usuario no tiene reservas activas.
+                    </div>
+                  ) : (
+                    <div style={{ overflowX: "auto" }}>
+                      <table className="admin-events-table">
+                        <thead>
+                          <tr>
+                            <th>Evento</th>
+                            <th>Entradas</th>
+                            <th>Total</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {reservations
+                            .filter((r) => String(r.userId) === String(selectedUserId) && r.status === "confirmed")
+                            .map((reservation) => {
+                              const event = events.find((e) => e.id === reservation.eventId)
+                              return (
+                                <tr key={reservation.id}>
+                                  <td>{event?.title || "Evento Desconocido"}</td>
+                                  <td>{reservation.ticketCount}</td>
+                                  <td>${Number(reservation.totalPrice).toFixed(2)}</td>
+                                  <td>{event?.date}</td>
+                                  <td>
+                                    <button
+                                      onClick={async () => {
+                                        if (window.confirm("¿Cancelar esta reserva?")) {
+                                          try {
+                                            await cancelReservation(reservation.id)
+                                          } catch (error) {
+                                            alert("Error al cancelar reserva")
+                                          }
+                                        }
+                                      }}
+                                      className="btn btn-outline"
+                                      style={{ borderColor: "var(--destructive)", color: "var(--destructive)", padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
+                                    >
+                                      Cancelar
+                                    </button>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
